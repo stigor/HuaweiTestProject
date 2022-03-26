@@ -1,16 +1,16 @@
 package org.example;
 
+import io.qameta.allure.Description;
 import org.example.model.LinkedNode;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-public class LinkedNodeBaseTest {
+public class LinkedNodeBaseTest extends TestBase {
 
     static List<Arguments> differentArgumentsForNode() {
         LinkedNode initialNode = new LinkedNode(null, 0);
@@ -27,7 +27,8 @@ public class LinkedNodeBaseTest {
         );
     }
 
-    @ParameterizedTest
+    @Description("Check how to work LinkedNode object creation")
+    @ParameterizedTestWithDisplayName
     @MethodSource("differentArgumentsForNode")
     void shouldCreateNodeWithDifferentArguments(LinkedNode innerNode, Integer expectedValue) {
         LinkedNode createdLinkedNode = new LinkedNode(innerNode, expectedValue);
@@ -37,31 +38,34 @@ public class LinkedNodeBaseTest {
         assertEquals(expectedValue, createdLinkedNode.value);
     }
 
-    static List<Arguments> dataProviderForCheckingFindMethod() {
+    static List<Arguments> parametersForCheckingFindMethods() {
         LinkedNode initialNode = new LinkedNode(null, 0);
-        LinkedNode nextNode = new LinkedNode(initialNode, 0);
+        LinkedNode nextNode = new LinkedNode(initialNode, 1);
+        LinkedNode nextNodeWithSameValue = new LinkedNode(initialNode, 0);
 
         return List.of(
                 Arguments.of(initialNode, 0, null),
-                Arguments.of(initialNode, 100, null),
-                Arguments.of(nextNode, 0, initialNode),
-                Arguments.of(nextNode, 10, null)
+                Arguments.of(initialNode, -1, null),
+                Arguments.of(nextNode, 1, initialNode),
+                Arguments.of(nextNode, 10, null),
+                Arguments.of(new LinkedNode(nextNode, 10), 1, nextNode),
+                Arguments.of(new LinkedNode(nextNode, 10), 0, initialNode),
+                Arguments.of(nextNodeWithSameValue, 0, initialNode) // ToDo: Discuss this case
         );
     }
 
-    @ParameterizedTest
-    @MethodSource("dataProviderForCheckingFindMethod")
-    void checkFindMethodWorks(LinkedNode whereFindNode, Integer expectedValue, LinkedNode expectedNode) {
-        assertEquals(expectedNode, whereFindNode.findNode(expectedValue));
+    @Description("Check how to work findNodeByValueWithIncorrectImplementation method")
+    @ParameterizedTestWithDisplayName
+    @MethodSource("parametersForCheckingFindMethods")
+    void checkFindMethodWithIncorrectImplementationWorks(LinkedNode linkedNodeForSearch, Integer expectedValue, LinkedNode expectedNode) {
+        assertEquals(expectedNode, linkedNodeForSearch.findNodeByValueWithIncorrectImplementation(expectedValue));
     }
 
-    @Test
-    void someTest() {
-        LinkedNode initialNode = new LinkedNode(null, 5);
-        LinkedNode nextNode = new LinkedNode(initialNode, 10);
-
-        assertNull(initialNode.findNode(5));
-        assertEquals(nextNode, nextNode);
+    @Description("Check how to work findNodeByValue method")
+    @ParameterizedTestWithDisplayName
+    @MethodSource("parametersForCheckingFindMethods")
+    void checkFindMethodWorks(LinkedNode linkedNodeForSearch, Integer valueForSearch, LinkedNode expectedNode) {
+        assertEquals(expectedNode, linkedNodeForSearch.findNodeByValue(valueForSearch));
     }
 
 }

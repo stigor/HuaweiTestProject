@@ -9,12 +9,29 @@ public class LinkedNode {
         this.value = value;
     }
 
-    public LinkedNode findNode(Integer expectedValue) {
+    // ToDo: This method has incorrect implementation
+    public LinkedNode findNodeByValueWithIncorrectImplementation(Integer expectedValue) {
         LinkedNode currentNode = this.node;
 
         if (currentNode == null) return null;
 
         while (currentNode.node != null) {
+            if (currentNode.value.equals(expectedValue)) {
+                return currentNode;
+            }
+            currentNode = currentNode.node;
+        }
+
+        return null;
+    }
+
+    public LinkedNode findNodeByValue(Integer expectedValue) {
+        if (this.value.equals(expectedValue)) {
+            return this.node;
+        }
+        LinkedNode currentNode = this.node;
+
+        while (currentNode != null) {
             if (currentNode.value.equals(expectedValue)) {
                 return currentNode;
             }
